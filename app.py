@@ -1,28 +1,3 @@
-None selected 
-
-
-Skip to content
-Using Gmail with screen readers
-Thanks for your kind letterEnd now Vacation Settings
-Workspace
-Get professional email and tools at 50% off
-Look more professional with a custom email address like you@yourbusiness.com
-Conversations
-(no subject)
-Inbox
-
-Nilanjan Chatterjee <75neel@gmail.com>
-Attachments
-1:25 AM (2 minutes ago)
-to me
-
-
-
-Nilanjan Chatterjee
- One attachment
-  •  Scanned by Gmail
-app.py
-100%
 import streamlit as st
 import random
 import json
@@ -389,4 +364,3 @@ elif st.session_state.page == "NCERT & Online Resources":
 
 st.divider()
 st.caption("Chemistry XI Learning App · NCERT-aligned practice material · For educational use")
-Displaying app.py.
