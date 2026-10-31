@@ -1,366 +1,508 @@
-import streamlit as st
+"""
+CBSE Class XI Chemistry (NCERT) - Learning Game  (Streamlit version)
+Part 1: Key words of each chapter
+Part 2: Tricky quiz with hints, congratulations / correct answer
+Part 3: Chapter-wise practice questions (1, 2, 3 marks) with answers
+
+To add content, edit the CHAPTERS dictionary below.
+All questions are original practice material written to follow the NCERT
+(rationalised) Class XI Chemistry syllabus - they are not copied from the book.
+"""
 import random
-import json
-from datetime import datetime
 
-st.set_page_config(page_title="Chemistry XI | Learn & Quiz", page_icon="🧪", layout="wide")
+import streamlit as st
 
-# -------------------- CONTENT --------------------
 CHAPTERS = {
-"Some Basic Concepts of Chemistry": {
- "unit":"Unit 1", "weight":"7 marks",
- "memory":"Memory cue: Matter → Measure → Laws → Mole → Maths",
- "keywords":[
-  ("Matter & its classification","This concept explains the key NCERT principle, its definition, and its application.","Review the corresponding NCERT concept and its key application."),
-  ("SI units & significant figures","Review the corresponding NCERT concept and its key application.","This concept explains the key NCERT principle, its definition, and its application."),
-  ("Laws of chemical combination","Conservation of mass, definite proportions, multiple proportions, Gay-Lussac's law, Avogadro's law।","This concept explains the key NCERT principle, its definition, and its application."),
-  ("Atomic & molecular mass","Review the corresponding NCERT concept and its key application.","Review the corresponding NCERT concept and its key application."),
-  ("Mole concept","Review the corresponding NCERT concept and its key application.","Review the corresponding NCERT concept and its key application."),
-  ("Percentage composition","Review the corresponding NCERT concept and its key application.","Review the corresponding NCERT concept and its key application."),
-  ("Stoichiometry & limiting reagent","Balanced equation, mole ratio, limiting reagent, excess reagent, theoretical yield।","This concept explains the key NCERT principle, its definition, and its application.")
- ],
- "quiz":[
-  ("Choose the correct answer based on the relevant NCERT concept.",["6.022 × 10²³","3.011 × 10²³","6.022 × 10²²","1.00 × 10²³"],0,"Recall the relevant definition, formula, or NCERT principle.","Review the corresponding NCERT concept and its key application.","Mole concept"),
-  ("Choose the correct answer based on the relevant NCERT concept.",["0.5 mol","1 mol","2 mol","18 mol"],1,"Recall the relevant definition, formula, or NCERT principle.","n = 18/18 = 1 mol।","Mole concept"),
-  ("Choose the correct answer based on the relevant NCERT concept.",["Volume","Total mass","Temperature","Density"],1,"Recall the relevant definition, formula, or NCERT principle.","This concept explains the key NCERT principle, its definition, and its application.","Laws"),
-  ("Choose the correct answer based on the relevant NCERT concept.",["11.1%","50.0%","88.9%","16.0%"],2,"Review the corresponding NCERT concept and its key application.","(16/18) × 100 = 88.9%।","Percentage composition"),
-  ("Choose the correct answer based on the relevant NCERT concept.",["H₂","O₂","H₂O","None of these"],0,"Review the corresponding NCERT concept and its key application.","This concept explains the key NCERT principle, its definition, and its application.","Limiting reagent"),
-  ("Choose the correct answer based on the relevant NCERT concept.",["Sand and water","Oil and water","Air","Iron and sulphur"],2,"Recall the relevant definition, formula, or NCERT principle.","Review the corresponding NCERT concept and its key application.","Matter"),
-  ("Choose the correct answer based on the relevant NCERT concept.",["2","3","4","5"],1,"Review the corresponding NCERT concept and its key application.","Review the corresponding NCERT concept and its key application.","Measurement"),
-  ("Choose the correct answer based on the relevant NCERT concept.",["Multiple proportions","Definite proportions","Conservation of energy","Avogadro law"],1,"Review the corresponding NCERT concept and its key application.","Review the corresponding NCERT concept and its key application.","Laws")
- ]},
-"Structure of Atom": {
- "unit":"Unit 2","weight":"9 marks","memory":"Memory cue: Particles → Models → Spectra → Bohr → Quantum",
- "keywords":[
-  ("Subatomic particles","Review the corresponding NCERT concept and its key application.","Review the corresponding NCERT concept and its key application."),
-  ("Atomic models","Review the corresponding NCERT concept and its key application.","This concept explains the key NCERT principle, its definition, and its application."),
-  ("Electromagnetic radiation","Wavelength (λ), frequency (ν), speed of light; c = νλ।","This concept explains the key NCERT principle, its definition, and its application."),
-  ("Planck & photoelectric effect","Review the corresponding NCERT concept and its key application.","This concept explains the key NCERT principle, its definition, and its application."),
-  ("Bohr model","Review the corresponding NCERT concept and its key application.","Review the corresponding NCERT concept and its key application."),
-  ("Quantum numbers","Review the corresponding NCERT concept and its key application.","n = shell; l = subshell; mₗ = orbital orientation; mₛ = spin।"),
-  ("Orbitals & electronic configuration","Aufbau principle, Pauli exclusion principle, Hund's rule; s, p, d orbitals।","Review the corresponding NCERT concept and its key application.")
- ],
- "quiz":[
-  ("Choose the correct answer based on the relevant NCERT concept.",["Review the corresponding NCERT concept and its key application.","Review the corresponding NCERT concept and its key application.","This concept explains the key NCERT principle, its definition, and its application.","Review the corresponding NCERT concept and its key application."],1,"Choose the correct answer based on the relevant NCERT concept.","Review the corresponding NCERT concept and its key application.","Atomic models"),
-  ("Choose the correct answer based on the relevant NCERT concept.",["Wavelength","Frequency","Velocity of electron","Energy"],1,"Recall the relevant definition, formula, or NCERT principle.","Review the corresponding NCERT concept and its key application.","Radiation"),
-  ("Choose the correct answer based on the relevant NCERT concept.",["E = mc²","E = hν","E = h/ν","E = ν/h"],1,"Review the corresponding NCERT concept and its key application.","E = hν।","Planck"),
-  ("Choose the correct answer based on the relevant NCERT concept.",["8","18","32","9"],1,"Review the corresponding NCERT concept and its key application.","2 × 3² = 18।","Shell"),
-  ("Choose the correct answer based on the relevant NCERT concept.",["s","p","d","f"],1,"s=0, p=1, d=2, f=3।","Review the corresponding NCERT concept and its key application.","Quantum numbers"),
-  ("Choose the correct answer based on the relevant NCERT concept.",["1","2","4","8"],1,"Pauli exclusion principle।","Review the corresponding NCERT concept and its key application.","Pauli principle"),
-  ("Choose the correct answer based on the relevant NCERT concept.",["Pair up first","This concept explains the key NCERT principle, its definition, and its application.","All in the same orbital","Randomly"],1,"This concept explains the key NCERT principle, its definition, and its application.","Review the corresponding NCERT concept and its key application.","Hund's rule"),
-  ("Choose the correct answer based on the relevant NCERT concept.",["Select the correct option.","quantised","Review the corresponding NCERT concept and its key application.","Review the corresponding NCERT concept and its key application."],1,"Recall the relevant definition, formula, or NCERT principle.","Angular momentum quantised।","Bohr model")
- ]},
-"Classification of Elements and Periodicity in Properties": {
- "unit":"Unit 3","weight":"6 marks","memory":"Memory cue: Table → Position → Configuration → Trends",
- "keywords":[
-  ("Modern periodic law","Review the corresponding NCERT concept and its key application.","Review the corresponding NCERT concept and its key application."),
-  ("Groups, periods & blocks","18 groups, 7 periods; s-, p-, d-, f-block।","This concept explains the key NCERT principle, its definition, and its application."),
-  ("Electronic configuration","Review the corresponding NCERT concept and its key application.","Recall the relevant definition, formula, or NCERT principle."),
-  ("Atomic & ionic radius","This concept explains the key NCERT principle, its definition, and its application.","Recall the relevant definition, formula, or NCERT principle."),
-  ("Ionisation enthalpy","Review the corresponding NCERT concept and its key application.","This concept explains the key NCERT principle, its definition, and its application."),
-  ("Electron gain enthalpy & electronegativity","Review the corresponding NCERT concept and its key application.","Review the corresponding NCERT concept and its key application."),
-  ("Metallic character","This concept explains the key NCERT principle, its definition, and its application.","Review the corresponding NCERT concept and its key application.")
- ],
- "quiz":[
-  ("Choose the correct answer based on the relevant NCERT concept.",["Atomic mass","Atomic number","Neutron number","Density"],1,"Recall the relevant definition, formula, or NCERT principle.","Review the corresponding NCERT concept and its key application.","Periodic law"),
-  ("Choose the correct answer based on the relevant NCERT concept.",["increases","decreases","remains unchanged","Review the corresponding NCERT concept and its key application."],1,"This concept explains the key NCERT principle, its definition, and its application.","This concept explains the key NCERT principle, its definition, and its application.","Atomic radius"),
-  ("Choose the correct answer based on the relevant NCERT concept.",["s-block","p-block","d-block","f-block"],0,"This concept explains the key NCERT principle, its definition, and its application.","Review the corresponding NCERT concept and its key application.","Blocks"),
-  ("Choose the correct answer based on the relevant NCERT concept.",["O","Cl","F","N"],2,"Recall the relevant definition, formula, or NCERT principle.","Review the corresponding NCERT concept and its key application.","Electronegativity"),
-  ("Choose the correct answer based on the relevant NCERT concept.",["decreases","increases","remains unchanged","This concept explains the key NCERT principle, its definition, and its application."],1,"This concept explains the key NCERT principle, its definition, and its application.","This concept explains the key NCERT principle, its definition, and its application.","Atomic radius"),
-  ("Choose the correct answer based on the relevant NCERT concept.",["increases","decreases","This concept explains the key NCERT principle, its definition, and its application.","This concept explains the key NCERT principle, its definition, and its application."],1,"Review the corresponding NCERT concept and its key application.","This concept explains the key NCERT principle, its definition, and its application.","Metallic character"),
-  ("Choose the correct answer based on the relevant NCERT concept.",["Representative elements","Transition elements","Noble gases","Inner transition elements"],1,"This concept explains the key NCERT principle, its definition, and its application.","Review the corresponding NCERT concept and its key application.","Blocks"),
-  ("Choose the correct answer based on the relevant NCERT concept.",["Review the corresponding NCERT concept and its key application.","Review the corresponding NCERT concept and its key application.","Review the corresponding NCERT concept and its key application.","Review the corresponding NCERT concept and its key application."],1,"This concept explains the key NCERT principle, its definition, and its application.","Review the corresponding NCERT concept and its key application.","Ionisation")
- ]},
-"Chemical Bonding and Molecular Structure": {
- "unit":"Unit 4","weight":"7 marks","memory":"Memory cue: Lewis → Ionic/Covalent → Shape → Hybridisation → MO → H-bond",
- "keywords":[
-  ("Lewis dot structure & octet rule","Review the corresponding NCERT concept and its key application.","This concept explains the key NCERT principle, its definition, and its application."),
-  ("Ionic & covalent bond","Review the corresponding NCERT concept and its key application.","Review the corresponding NCERT concept and its key application."),
-  ("Bond parameters","Bond length, bond angle, bond enthalpy, bond order, dipole moment।","This concept explains the key NCERT principle, its definition, and its application."),
-  ("VSEPR theory","Review the corresponding NCERT concept and its key application.","LP–LP > LP–BP > BP–BP repulsion।"),
-  ("Valence bond theory & hybridisation","Orbital overlap; sp, sp², sp³, dsp², sp³d, sp³d²।","This concept explains the key NCERT principle, its definition, and its application."),
-  ("Molecular orbital theory","Bonding/antibonding MO, bond order = (Nb−Na)/2, magnetic behaviour।","Review the corresponding NCERT concept and its key application."),
-  ("Hydrogen bonding","Intermolecular/intramolecular attraction involving H bonded to F, O or N।","Review the corresponding NCERT concept and its key application.")
- ],
- "quiz":[
-  ("Choose the correct answer based on the relevant NCERT concept.",["BP–BP","LP–BP","LP–LP","All are equal"],2,"This concept explains the key NCERT principle, its definition, and its application.","LP–LP > LP–BP > BP–BP।","VSEPR"),
-  ("Choose the correct answer based on the relevant NCERT concept.",["Linear","Trigonal planar","Tetrahedral","Bent"],2,"Review the corresponding NCERT concept and its key application.","Review the corresponding NCERT concept and its key application.","Shape"),
-  ("Choose the correct answer based on the relevant NCERT concept.",["sp","sp²","sp³","sp³d"],1,"Review the corresponding NCERT concept and its key application.","Review the corresponding NCERT concept and its key application.","Hybridisation"),
-  ("Choose the correct answer based on the relevant NCERT concept.",["(Nb+Na)/2","(Nb−Na)/2","Nb−2Na","Na/Nb"],1,"Review the corresponding NCERT concept and its key application.","Bond order = (Nb−Na)/2।","MOT"),
-  ("Choose the correct answer based on the relevant NCERT concept.",["All electrons are paired","Review the corresponding NCERT concept and its key application.","Select the correct option.","It is ionic"],1,"Recall the relevant definition, formula, or NCERT principle.","This concept explains the key NCERT principle, its definition, and its application.","Magnetism"),
-  ("Choose the correct answer based on the relevant NCERT concept.",["CH₄","H₂O","CO₂","CCl₄"],1,"Recall the relevant definition, formula, or NCERT principle.","This concept explains the key NCERT principle, its definition, and its application.","Hydrogen bonding"),
-  ("Choose the correct answer based on the relevant NCERT concept.",["increases","decreases","remains unchanged","This concept explains the key NCERT principle, its definition, and its application."],1,"Review the corresponding NCERT concept and its key application.","This concept explains the key NCERT principle, its definition, and its application.","Bond parameters"),
-  ("Choose the correct answer based on the relevant NCERT concept.",["Covalent","Ionic","Metallic","Hydrogen"],1,"This concept explains the key NCERT principle, its definition, and its application.","Review the corresponding NCERT concept and its key application.","Ionic bond")
- ]},
-"Chemical Thermodynamics": {
- "unit":"Unit 5","weight":"9 marks","memory":"Memory cue: System → Heat/Work → First Law → Enthalpy → Entropy → Gibbs",
- "keywords":[
-  ("System, surroundings & state functions","Open/closed/isolated system; boundary; intensive/extensive properties।","Review the corresponding NCERT concept and its key application."),
-  ("Heat, work & internal energy","q, w, ΔU; chemistry sign convention; ΔU = q + w।","Review the corresponding NCERT concept and its key application."),
-  ("First law of thermodynamics","Energy conservation; ΔU = q + w।","This concept explains the key NCERT principle, its definition, and its application."),
-  ("Enthalpy & calorimetry","H = U + pV; ΔH; heat capacity; specific heat; calorimeter।","Review the corresponding NCERT concept and its key application."),
-  ("Hess's law & bond enthalpy","Reaction enthalpy path-independent; formation/combustion enthalpy।","Review the corresponding NCERT concept and its key application."),
-  ("Entropy & spontaneity","Entropy (S), disorder/energy dispersal; ΔS; spontaneous process।","Review the corresponding NCERT concept and its key application."),
-  ("Gibbs energy","ΔG = ΔH − TΔS; spontaneity criterion at constant T,p।","ΔG < 0 spontaneous; ΔG = 0 equilibrium।")
- ],
- "quiz":[
-  ("Choose the correct answer based on the relevant NCERT concept.",["ΔU = q − w","ΔU = q + w","ΔU = q/w","Review the corresponding NCERT concept and its key application."],1,"Review the corresponding NCERT concept and its key application.","ΔU = q + w।","First law"),
-  ("Choose the correct answer based on the relevant NCERT concept.",["ΔU","ΔH","ΔS","ΔG"],1,"Review the corresponding NCERT concept and its key application.","qₚ = ΔH।","Enthalpy"),
-  ("Choose the correct answer based on the relevant NCERT concept.",["Heat","Work","Internal energy","Path length"],2,"This concept explains the key NCERT principle, its definition, and its application.","Review the corresponding NCERT concept and its key application.","State function"),
-  ("Choose the correct answer based on the relevant NCERT concept.",["Non-spontaneous","Spontaneous","Equilibrium","Impossible"],1,"Gibbs energy negative।","Review the corresponding NCERT concept and its key application.","Gibbs energy"),
-  ("Choose the correct answer based on the relevant NCERT concept.",["Mass conservation","Energy conservation","Uncertainty principle","Octet rule"],1,"Review the corresponding NCERT concept and its key application.","Review the corresponding NCERT concept and its key application.","Hess's law"),
-  ("Choose the correct answer based on the relevant NCERT concept.",["J mol⁻¹ K⁻¹","J mol⁻¹","K mol⁻¹","Pa mol⁻¹"],0,"Entropy = energy per temperature per mole।","J mol⁻¹ K⁻¹।","Entropy"),
-  ("Choose the correct answer based on the relevant NCERT concept.",["Endothermic","Exothermic","Isothermal","Adiabatic"],1,"Review the corresponding NCERT concept and its key application.","Exothermic reaction।","Enthalpy"),
-  ("Choose the correct answer based on the relevant NCERT concept.",["°C","K","°F","Any unit"],1,"Review the corresponding NCERT concept and its key application.","This concept explains the key NCERT principle, its definition, and its application.","Gibbs energy")
- ]},
-"Equilibrium": {
- "unit":"Unit 6","weight":"7 marks","memory":"Memory cue: Dynamic → K → Q → Le Chatelier → Acid/Base → Buffer → Ksp",
- "keywords":[
-  ("Dynamic equilibrium","Review the corresponding NCERT concept and its key application.","Review the corresponding NCERT concept and its key application."),
-  ("Law of mass action & equilibrium constant","Kc, Kp; reaction quotient Q; Kp = Kc(RT)^Δn।","Review the corresponding NCERT concept and its key application."),
-  ("Le Chatelier's principle","Review the corresponding NCERT concept and its key application.","This concept explains the key NCERT principle, its definition, and its application."),
-  ("Acids, bases & pH","Arrhenius, Brønsted-Lowry, Lewis; pH = −log[H⁺]।","Review the corresponding NCERT concept and its key application."),
-  ("Ionisation & buffer","Ka, Kb, Kw; common ion effect; buffer solution।","This concept explains the key NCERT principle, its definition, and its application."),
-  ("Salt hydrolysis","Review the corresponding NCERT concept and its key application.","Review the corresponding NCERT concept and its key application."),
-  ("Solubility product","Ksp, ionic product, precipitation condition।","Review the corresponding NCERT concept and its key application.")
- ],
- "quiz":[
-  ("Choose the correct answer based on the relevant NCERT concept.",["Review the corresponding NCERT concept and its key application.","Review the corresponding NCERT concept and its key application.","equal","Both are zero"],2,"Review the corresponding NCERT concept and its key application.","Review the corresponding NCERT concept and its key application.","Dynamic equilibrium"),
-  ("Choose the correct answer based on the relevant NCERT concept.",["Acidic","Basic","Neutral","Always a buffer"],0,"Review the corresponding NCERT concept and its key application.","Review the corresponding NCERT concept and its key application.","pH"),
-  ("Choose the correct answer based on the relevant NCERT concept.",["Reactants","Products","None of these","Catalyst only"],1,"This concept explains the key NCERT principle, its definition, and its application.","Review the corresponding NCERT concept and its key application.","Equilibrium constant"),
-  ("Choose the correct answer based on the relevant NCERT concept.",["Review the corresponding NCERT concept and its key application.","Review the corresponding NCERT concept and its key application.","Always to the left","No effect"],1,"This concept explains the key NCERT principle, its definition, and its application.","This concept explains the key NCERT principle, its definition, and its application.","Le Chatelier"),
-  ("Choose the correct answer based on the relevant NCERT concept.",["0","5","7","14"],2,"[H⁺] = 10⁻⁷ M।","pH = 7।","pH"),
-  ("Choose the correct answer based on the relevant NCERT concept.",["Review the corresponding NCERT concept and its key application.","Review the corresponding NCERT concept and its key application.","Review the corresponding NCERT concept and its key application.","Review the corresponding NCERT concept and its key application."],1,"This concept explains the key NCERT principle, its definition, and its application.","Review the corresponding NCERT concept and its key application.","Buffer"),
-  ("Choose the correct answer based on the relevant NCERT concept.",["This concept explains the key NCERT principle, its definition, and its application.","This concept explains the key NCERT principle, its definition, and its application.","This concept explains the key NCERT principle, its definition, and its application.","Select the correct option."],1,"Review the corresponding NCERT concept and its key application.","Review the corresponding NCERT concept and its key application.","Ksp"),
-  ("Choose the correct answer based on the relevant NCERT concept.",["Review the corresponding NCERT concept and its key application.","Review the corresponding NCERT concept and its key application.","This concept explains the key NCERT principle, its definition, and its application.","This concept explains the key NCERT principle, its definition, and its application."],2,"Review the corresponding NCERT concept and its key application.","This concept explains the key NCERT principle, its definition, and its application.","Catalyst")
- ]},
-"Redox Reactions": {
- "unit":"Unit 7","weight":"4 marks","memory":"Memory cue: Oxidation → Reduction → O.N. → Oxidising/Reducing agent → Balance",
- "keywords":[
-  ("Oxidation & reduction","Electron loss/gain; oxygen/hydrogen addition/removal; simultaneous process।","OIL RIG: Oxidation Is Loss, Reduction Is Gain (electron)।"),
-  ("Oxidation number","Rules for assigning oxidation state in atoms, ions and compounds।","Review the corresponding NCERT concept and its key application."),
-  ("Oxidising & reducing agents","This concept explains the key NCERT principle, its definition, and its application.","Review the corresponding NCERT concept and its key application."),
-  ("Types of redox reactions","Combination, decomposition, displacement, disproportionation।","Review the corresponding NCERT concept and its key application."),
-  ("Balancing redox equations","Review the corresponding NCERT concept and its key application.","This concept explains the key NCERT principle, its definition, and its application.")
- ],
- "quiz":[
-  ("Choose the correct answer based on the relevant NCERT concept.",["Gain","Loss","Sharing only","None of these"],1,"Recall the relevant definition, formula, or NCERT principle.","Oxidation = loss of electrons।","Oxidation"),
-  ("Choose the correct answer based on the relevant NCERT concept.",["+1","−1","0","+2"],2,"Review the corresponding NCERT concept and its key application.","Review the corresponding NCERT concept and its key application.","Oxidation number"),
-  ("Choose the correct answer based on the relevant NCERT concept.",["Oxidised","Reduced","remains unchanged","Review the corresponding NCERT concept and its key application."],1,"This concept explains the key NCERT principle, its definition, and its application.","This concept explains the key NCERT principle, its definition, and its application.","Agents"),
-  ("Choose the correct answer based on the relevant NCERT concept.",["−2","−1","0","+1"],1,"Recall the relevant definition, formula, or NCERT principle.","Review the corresponding NCERT concept and its key application.","Oxidation number"),
-  ("Choose the correct answer based on the relevant NCERT concept.",["Combination","Disproportionation","Neutralisation","Hydrolysis"],1,"Review the corresponding NCERT concept and its key application.","Review the corresponding NCERT concept and its key application.","Types"),
-  ("Choose the correct answer based on the relevant NCERT concept.",["increases","decreases","remains unchanged","This concept explains the key NCERT principle, its definition, and its application."],1,"This concept explains the key NCERT principle, its definition, and its application.","This concept explains the key NCERT principle, its definition, and its application.","Oxidation number"),
-  ("Choose the correct answer based on the relevant NCERT concept.",["Cu²⁺","Zn","Zn²⁺","Cu"],1,"This concept explains the key NCERT principle, its definition, and its application.","This concept explains the key NCERT principle, its definition, and its application.","Agents"),
-  ("Choose the correct answer based on the relevant NCERT concept.",["Atoms only","Charge only","Review the corresponding NCERT concept and its key application.","Volume only"],2,"This concept explains the key NCERT principle, its definition, and its application.","This concept explains the key NCERT principle, its definition, and its application.","Balancing")
- ]},
-"Organic Chemistry: Some Basic Principles and Techniques": {
- "unit":"Unit 8","weight":"11 marks","memory":"Memory cue: Carbon → Classification → Naming → Isomerism → Effects → Intermediates → Purification",
- "keywords":[
-  ("Tetravalency & catenation","Review the corresponding NCERT concept and its key application.","Review the corresponding NCERT concept and its key application."),
-  ("Classification & functional groups","Review the corresponding NCERT concept and its key application.","This concept explains the key NCERT principle, its definition, and its application."),
-  ("IUPAC nomenclature","Review the corresponding NCERT concept and its key application.","Review the corresponding NCERT concept and its key application."),
-  ("Isomerism","Review the corresponding NCERT concept and its key application.","Review the corresponding NCERT concept and its key application."),
-  ("Electronic effects","Inductive effect, resonance, electromeric effect, hyperconjugation।","Review the corresponding NCERT concept and its key application."),
-  ("Bond fission & reaction intermediates","Homolytic/heterolytic cleavage; carbocation, carbanion, free radical।","This concept explains the key NCERT principle, its definition, and its application."),
-  ("Types of organic reactions","Substitution, addition, elimination, rearrangement।","Review the corresponding NCERT concept and its key application."),
-  ("Purification & analysis","Crystallisation, distillation, sublimation, chromatography; qualitative/quantitative analysis।","This concept explains the key NCERT principle, its definition, and its application.")
- ],
- "quiz":[
-  ("Choose the correct answer based on the relevant NCERT concept.",["Review the corresponding NCERT concept and its key application.","Review the corresponding NCERT concept and its key application.","Ability to form four covalent bonds","Review the corresponding NCERT concept and its key application."],2,"Review the corresponding NCERT concept and its key application.","This concept explains the key NCERT principle, its definition, and its application.","Tetravalency"),
-  ("Choose the correct answer based on the relevant NCERT concept.",["Isotopes","Isomers","Isobars","Allotropes"],1,"Review the corresponding NCERT concept and its key application.","Review the corresponding NCERT concept and its key application.","Isomerism"),
-  ("Choose the correct answer based on the relevant NCERT concept.",["Aldehyde","Alcohol","Ketone","Carboxylic acid"],1,"Hydroxyl group।","Review the corresponding NCERT concept and its key application.","Functional groups"),
-  ("Choose the correct answer based on the relevant NCERT concept.",["Review the corresponding NCERT concept and its key application.","Review the corresponding NCERT concept and its key application.","Free radicals","Review the corresponding NCERT concept and its key application."],2,"This concept explains the key NCERT principle, its definition, and its application.","This concept explains the key NCERT principle, its definition, and its application.","Bond fission"),
-  ("Choose the correct answer based on the relevant NCERT concept.",["This concept explains the key NCERT principle, its definition, and its application.","Review the corresponding NCERT concept and its key application.","Review the corresponding NCERT concept and its key application.","This concept explains the key NCERT principle, its definition, and its application."],1,"Recall the relevant definition, formula, or NCERT principle.","Review the corresponding NCERT concept and its key application.","Bond fission"),
-  ("Choose the correct answer based on the relevant NCERT concept.",["Sigma bond","Pi bond only","Hydrogen bond","Metallic bond"],0,"Review the corresponding NCERT concept and its key application.","This concept explains the key NCERT principle, its definition, and its application.","Electronic effects"),
-  ("Choose the correct answer based on the relevant NCERT concept.",["Negative","Positive","Neutral","Review the corresponding NCERT concept and its key application."],1,"This concept explains the key NCERT principle, its definition, and its application.","Review the corresponding NCERT concept and its key application.","Intermediates"),
-  ("Choose the correct answer based on the relevant NCERT concept.",["Review the corresponding NCERT concept and its key application.","Review the corresponding NCERT concept and its key application.","Boiling point only","Molecular mass only"],1,"This concept explains the key NCERT principle, its definition, and its application.","This concept explains the key NCERT principle, its definition, and its application.","Purification")
- ]},
-"Hydrocarbons": {
- "unit":"Unit 9","weight":"10 marks","memory":"Memory cue: Alkane → Alkene → Alkyne → Aromatic → Reactions",
- "keywords":[
-  ("Alkanes","Saturated hydrocarbons; general formula CₙH₂ₙ₊₂; free-radical substitution।","This concept explains the key NCERT principle, its definition, and its application."),
-  ("Alkenes","One or more C=C; acyclic monoalkene formula CₙH₂ₙ; electrophilic addition।","Review the corresponding NCERT concept and its key application."),
-  ("Alkynes","C≡C triple bond; acyclic monoalkyne formula CₙH₂ₙ₋₂; terminal alkyne acidity।","This concept explains the key NCERT principle, its definition, and its application."),
-  ("Aromatic hydrocarbons","Benzene, resonance, aromatic stability, electrophilic substitution।","This concept explains the key NCERT principle, its definition, and its application."),
-  ("Markovnikov & peroxide effect","Review the corresponding NCERT concept and its key application.","Review the corresponding NCERT concept and its key application."),
-  ("Oxidation & ozonolysis","Review the corresponding NCERT concept and its key application.","This concept explains the key NCERT principle, its definition, and its application."),
-  ("Combustion & environmental impact","Complete/incomplete combustion; CO₂, CO, soot; fuel and pollution।","Review the corresponding NCERT concept and its key application.")
- ],
- "quiz":[
-  ("Choose the correct answer based on the relevant NCERT concept.",["CₙH₂ₙ","CₙH₂ₙ₊₂","CₙH₂ₙ₋₂","CₙHₙ"],1,"Review the corresponding NCERT concept and its key application.","CₙH₂ₙ₊₂।","Alkanes"),
-  ("Choose the correct answer based on the relevant NCERT concept.",["C–C single","C=C double","C≡C triple","Ionic bond"],1,"Recall the relevant definition, formula, or NCERT principle.","This concept explains the key NCERT principle, its definition, and its application.","Alkenes"),
-  ("Choose the correct answer based on the relevant NCERT concept.",["0","1","2","3"],2,"Review the corresponding NCERT concept and its key application.","Review the corresponding NCERT concept and its key application.","Alkynes"),
-  ("Choose the correct answer based on the relevant NCERT concept.",["Electrophilic substitution","Nucleophilic addition","Free radical polymerisation","Combustion only"],0,"Review the corresponding NCERT concept and its key application.","This concept explains the key NCERT principle, its definition, and its application.","Aromatic"),
-  ("Choose the correct answer based on the relevant NCERT concept.",["HCl","HBr","HI","HF"],1,"Review the corresponding NCERT concept and its key application.","Review the corresponding NCERT concept and its key application.","Peroxide effect"),
-  ("Choose the correct answer based on the relevant NCERT concept.",["Electrophilic addition","Free-radical substitution","Nucleophilic addition","Polymerisation"],1,"Recall the relevant definition, formula, or NCERT principle.","This concept explains the key NCERT principle, its definition, and its application.","Alkanes"),
-  ("Choose the correct answer based on the relevant NCERT concept.",["C–C single","C=C double","C–H","H–H"],1,"Review the corresponding NCERT concept and its key application.","This concept explains the key NCERT principle, its definition, and its application.","Ozonolysis"),
-  ("Choose the correct answer based on the relevant NCERT concept.",["O₂","CO","He","N₂"],1,"Review the corresponding NCERT concept and its key application.","Review the corresponding NCERT concept and its key application.","Combustion")
- ]}
+    1: {
+        "name": "Some Basic Concepts of Chemistry",
+        "keywords": [
+            ("Mole", "Amount of substance containing 6.022 x 10^23 elementary entities (Avogadro number)."),
+            ("Molar mass", "Mass of one mole of a substance in grams (g/mol)."),
+            ("Limiting reagent", "The reactant that is used up first and decides how much product forms."),
+            ("Significant figures", "Digits in a measurement that are known with certainty plus one uncertain digit."),
+            ("Law of multiple proportions", "Masses of one element combining with a fixed mass of another are in a simple whole-number ratio."),
+            ("Empirical formula", "Simplest whole-number ratio of atoms of each element in a compound."),
+            ("Molality", "Moles of solute per kg of solvent; does not change with temperature."),
+        ],
+        "quiz": [
+            ("Which concentration unit does NOT change with temperature?",
+             ["Molarity", "Molality", "Normality", "Volume percent"], 1,
+             "Think of what the unit divides by: volume or mass?",
+             "Molality uses mass of solvent, and mass does not change with temperature. The others depend on volume."),
+            ("How many significant figures are in 0.00250?",
+             ["2", "3", "5", "6"], 1,
+             "Leading zeros do not count; a trailing zero after the decimal point does.",
+             "Significant digits are 2, 5, 0, so 3."),
+            ("4 g of H2 is mixed with 16 g of O2 and reacted to form water (2H2 + O2 -> 2H2O). What mass of water forms?",
+             ["36 g", "18 g", "20 g", "9 g"], 1,
+             "Convert both reactants to moles first and find which one runs out.",
+             "H2 = 2 mol, O2 = 0.5 mol. O2 is limiting: 0.5 mol O2 gives 1 mol H2O = 18 g."),
+            ("16 g of O2 and 16 g of O3 contain:",
+             ["The same number of molecules", "The same number of oxygen atoms",
+              "More atoms in O3", "More atoms in O2"], 1,
+             "Both samples are made only of oxygen atoms. Compare the masses.",
+             "Same mass of the same element means the same number of atoms. Molecules differ (O2 has more)."),
+        ],
+        "practice": [
+            (1, "State the law of multiple proportions.",
+             "When two elements form more than one compound, the different masses of one element that combine with a fixed mass of the other are in a simple whole-number ratio."),
+            (2, "Calculate the mass of 0.25 mol of CO2.",
+             "Molar mass of CO2 = 44 g/mol. Mass = 0.25 x 44 = 11 g."),
+            (2, "Calculate the molarity of a solution containing 4 g NaOH in 500 mL of solution.",
+             "Moles = 4/40 = 0.1 mol. Molarity = 0.1 / 0.5 L = 0.2 M."),
+            (3, "A compound has 40% C, 6.7% H and 53.3% O. Its molar mass is 180 g/mol. Find the empirical and molecular formula.",
+             "Mole ratio C : H : O = 3.33 : 6.7 : 3.33 = 1 : 2 : 1, so empirical formula CH2O (mass 30). 180/30 = 6, so molecular formula C6H12O6."),
+        ],
+    },
+    2: {
+        "name": "Structure of Atom",
+        "keywords": [
+            ("Quantum numbers", "n, l, ml, ms: describe size, shape, orientation and spin of an electron's orbital."),
+            ("Heisenberg uncertainty principle", "Position and momentum of a small particle cannot both be known exactly at the same time."),
+            ("de Broglie wavelength", "Matter has wave nature; wavelength = h / (mv)."),
+            ("Aufbau principle", "Electrons fill orbitals in order of increasing energy ((n + l) rule)."),
+            ("Hund's rule", "Degenerate orbitals are singly occupied (same spin) before pairing begins."),
+            ("Pauli exclusion principle", "No two electrons in an atom can have the same set of all four quantum numbers."),
+            ("Photoelectric effect", "Emission of electrons from a metal surface when light above a threshold frequency falls on it."),
+            ("Node", "Region where the probability of finding an electron is zero."),
+        ],
+        "quiz": [
+            ("What is the maximum number of electrons that can be accommodated in the shell with n = 3?",
+             ["8", "18", "32", "9"], 1, "Use the 2n^2 formula.", "2 x 3^2 = 18."),
+            ("How many radial nodes does a 3p orbital have?",
+             ["0", "1", "2", "3"], 1, "Radial nodes = n - l - 1.", "n = 3, l = 1, so 3 - 1 - 1 = 1."),
+            ("Which is the correct ground-state configuration of chromium (Z = 24)?",
+             ["[Ar] 3d4 4s2", "[Ar] 3d5 4s1", "[Ar] 3d6", "[Ar] 4s2 4p4"], 1,
+             "Half-filled d subshell gives extra stability.",
+             "One electron shifts from 4s to 3d, giving a half-filled, symmetric 3d5."),
+            ("Which set of quantum numbers (n, l, ml, ms) is NOT possible?",
+             ["(3, 2, -2, +1/2)", "(2, 2, 0, -1/2)", "(4, 3, 3, +1/2)", "(1, 0, 0, -1/2)"], 1,
+             "Check the rule linking l and n.",
+             "l can go only from 0 to n - 1. For n = 2, l = 2 is not allowed."),
+        ],
+        "practice": [
+            (1, "State the Pauli exclusion principle.",
+             "No two electrons in an atom can have identical values of all four quantum numbers; an orbital holds at most two electrons of opposite spin."),
+            (2, "Write the four quantum numbers of the outermost electron of sodium (Z = 11).",
+             "Configuration [Ne] 3s1, so n = 3, l = 0, ml = 0, ms = +1/2 (or -1/2)."),
+            (2, "Write the electronic configuration of Fe (Z = 26) and Fe3+.",
+             "Fe: [Ar] 3d6 4s2. Fe3+: [Ar] 3d5 (4s electrons are lost first)."),
+            (3, "Calculate the energy of one photon of light of wavelength 500 nm. (h = 6.626 x 10^-34 J s, c = 3 x 10^8 m/s)",
+             "E = hc / wavelength = (6.626e-34 x 3e8) / 5e-7 = about 3.98 x 10^-19 J."),
+        ],
+    },
+    3: {
+        "name": "Classification of Elements and Periodicity in Properties",
+        "keywords": [
+            ("Modern periodic law", "Properties of elements are periodic functions of their atomic numbers."),
+            ("Ionisation enthalpy", "Energy needed to remove the outermost electron from an isolated gaseous atom."),
+            ("Electron gain enthalpy", "Enthalpy change when a gaseous atom gains an electron."),
+            ("Electronegativity", "Tendency of an atom in a molecule to attract the shared pair of electrons."),
+            ("Isoelectronic species", "Atoms or ions with the same number of electrons."),
+            ("Screening effect", "Inner electrons shield outer electrons from the full nuclear charge."),
+            ("Effective nuclear charge", "Net positive charge felt by an outer electron (Z minus shielding)."),
+            ("Diagonal relationship", "Similarity between an element and the one diagonally below-right (e.g. Li and Mg)."),
+        ],
+        "quiz": [
+            ("Which element has the most negative electron gain enthalpy?",
+             ["Fluorine", "Chlorine", "Bromine", "Oxygen"], 1,
+             "The smallest atom is not the winner here; think about electron-electron repulsion.",
+             "Chlorine. Fluorine's small 2p subshell causes strong repulsion, so its value is less negative."),
+            ("Which has the largest radius: O2-, F-, Na+, Mg2+?",
+             ["O2-", "F-", "Na+", "Mg2+"], 0,
+             "All have 10 electrons. What differs is the number of protons.",
+             "In isoelectronic species, fewer protons means weaker pull and larger size. O2- has 8 protons."),
+            ("Which has the higher first ionisation enthalpy?",
+             ["Boron", "Beryllium", "Both are equal", "Cannot be predicted"], 1,
+             "Think about which outer subshell is fully filled.",
+             "Be (2s2) removes an electron from a stable filled s orbital; B (2s2 2p1) loses a higher-energy p electron."),
+            ("What is the IUPAC temporary name for the element with Z = 120?",
+             ["Unbinilium", "Ununbium", "Unnilbium", "Unbiunium"], 0,
+             "Digits: 1 = un, 2 = bi, 0 = nil. End with -ium.",
+             "1-2-0 gives un + bi + nil + ium = Unbinilium."),
+        ],
+        "practice": [
+            (1, "State the modern periodic law.",
+             "The physical and chemical properties of elements are periodic functions of their atomic numbers."),
+            (2, "Why is the first ionisation enthalpy of nitrogen higher than that of oxygen?",
+             "Nitrogen has a stable half-filled 2p3 configuration. In oxygen (2p4) one orbital has paired electrons whose repulsion makes removal easier."),
+            (2, "Why is the electron gain enthalpy of fluorine less negative than that of chlorine?",
+             "Fluorine's very small 2p subshell has strong inter-electronic repulsion, which reduces the energy released on adding an electron."),
+            (3, "Arrange Na+, Mg2+, F-, O2- in increasing order of ionic radius and justify.",
+             "Mg2+ < Na+ < F- < O2-. All have 10 electrons; greater nuclear charge pulls the electron cloud in more strongly."),
+        ],
+    },
+    4: {
+        "name": "Chemical Bonding and Molecular Structure",
+        "keywords": [
+            ("Octet rule", "Atoms tend to have eight electrons in the valence shell."),
+            ("VSEPR theory", "Shape of a molecule is decided by repulsion between electron pairs (lp-lp > lp-bp > bp-bp)."),
+            ("Hybridisation", "Mixing of atomic orbitals of similar energy to form new equivalent hybrid orbitals."),
+            ("Bond order", "Half the difference between bonding and antibonding electrons."),
+            ("Dipole moment", "Product of charge and distance between charges; a vector quantity."),
+            ("Resonance", "Actual structure is a hybrid of two or more contributing structures."),
+            ("Sigma and pi bonds", "Sigma: head-on overlap. Pi: sideways overlap of p orbitals."),
+            ("Formal charge", "Valence electrons - non-bonding electrons - half the bonding electrons."),
+            ("Hydrogen bond", "Attraction between H bonded to N, O or F and a lone pair on another N, O or F."),
+        ],
+        "quiz": [
+            ("What is the shape of the NH3 molecule?",
+             ["Planar triangular", "Trigonal pyramidal", "Tetrahedral", "Bent"], 1,
+             "Count bond pairs and lone pairs on nitrogen.",
+             "3 bond pairs + 1 lone pair gives a tetrahedral arrangement of pairs but a pyramidal molecular shape."),
+            ("What is the bond order of O2+?",
+             ["1.5", "2", "2.5", "3"], 2,
+             "O2 has 2. Which electron is removed to form the cation, bonding or antibonding?",
+             "An antibonding pi* electron is removed, so bond order = (10 - 5) / 2 = 2.5."),
+            ("Which of these is paramagnetic?",
+             ["N2", "O2", "F2", "C2"], 1,
+             "Look for unpaired electrons in the molecular orbital diagram.",
+             "O2 has two unpaired electrons in pi* orbitals. N2, F2 and C2 are diamagnetic."),
+            ("NH3 and NF3 both are pyramidal. Which has the larger dipole moment?",
+             ["NH3", "NF3", "Equal", "Both are zero"], 0,
+             "Compare the direction of the N-X bond dipoles with the lone-pair dipole.",
+             "In NH3 the bond dipoles add to the lone-pair dipole; in NF3 they oppose it, so the net value is small."),
+        ],
+        "practice": [
+            (1, "Define bond order.",
+             "Half the difference between the number of electrons in bonding and antibonding molecular orbitals."),
+            (2, "Why is the H-O-H angle in water 104.5 degrees and not 109.5 degrees?",
+             "Oxygen is sp3 hybridised with two lone pairs. Lone pair-lone pair repulsion is greater than bond pair repulsion, which compresses the angle."),
+            (3, "Write the molecular orbital configuration of N2. State its bond order and magnetic behaviour.",
+             "(sigma1s)2 (sigma*1s)2 (sigma2s)2 (sigma*2s)2 (pi2px)2 (pi2py)2 (sigma2pz)2. Bond order = (10 - 4)/2 = 3. Diamagnetic."),
+            (3, "Explain the hybridisation of carbon in ethene.",
+             "Each carbon is sp2 hybridised. Two sp2 orbitals form C-H sigma bonds and one forms the C-C sigma bond; the unhybridised p orbitals overlap sideways to form the pi bond. The molecule is planar with 120 degree angles."),
+        ],
+    },
+    5: {
+        "name": "Thermodynamics",
+        "keywords": [
+            ("System and surroundings", "System is the part under study; everything else is surroundings."),
+            ("State function", "Property depending only on the initial and final state (U, H, S, G), not the path."),
+            ("Enthalpy (H)", "H = U + PV; heat change at constant pressure equals delta H."),
+            ("Hess's law", "Total enthalpy change is the same whether a reaction occurs in one step or several."),
+            ("Entropy (S)", "Measure of disorder or randomness of a system."),
+            ("Gibbs energy (G)", "G = H - TS; delta G < 0 means a process is spontaneous."),
+            ("Standard enthalpy of formation", "Enthalpy change when 1 mol of a compound forms from its elements in their standard states."),
+            ("Bond enthalpy", "Energy required to break one mole of a particular bond in the gas phase."),
+        ],
+        "quiz": [
+            ("Which of these is NOT a state function?",
+             ["Enthalpy", "Entropy", "Internal energy", "Work"], 3,
+             "Which one depends on how you get from A to B?",
+             "Work (and heat) are path functions."),
+            ("A reaction has negative delta H and negative delta S. It is spontaneous at:",
+             ["All temperatures", "No temperature", "Low temperature", "High temperature"], 2,
+             "Use delta G = delta H - T delta S and see when the T term stays small.",
+             "At low T the negative delta H dominates, so delta G is negative."),
+            ("For N2(g) + 3H2(g) -> 2NH3(g), delta H - delta U equals:",
+             ["+2RT", "-2RT", "-4RT", "0"], 1,
+             "Use delta n(g) = moles of gaseous products - moles of gaseous reactants.",
+             "delta n(g) = 2 - 4 = -2, so delta H - delta U = -2RT."),
+            ("The standard enthalpy of formation of ozone, O3(g), is:",
+             ["Zero", "Positive", "Negative", "Cannot be said"], 1,
+             "Which form of oxygen is the reference state, O2 or O3?",
+             "Zero applies only to O2, the stable standard state. Making O3 from O2 absorbs energy, so it is positive."),
+        ],
+        "practice": [
+            (1, "State the first law of thermodynamics.",
+             "Energy can neither be created nor destroyed: delta U = q + w."),
+            (2, "Differentiate between extensive and intensive properties with examples.",
+             "Extensive properties depend on the amount of matter (mass, volume, enthalpy). Intensive properties do not (temperature, density, pressure)."),
+            (3, "Given C(graphite) + O2 -> CO2, delta H = -393.5 kJ and CO + 1/2 O2 -> CO2, delta H = -283.0 kJ, find the enthalpy of formation of CO.",
+             "Subtract the second from the first: C + 1/2 O2 -> CO, delta H = -393.5 + 283.0 = -110.5 kJ/mol."),
+            (3, "For a reaction delta H = +30 kJ and delta S = +100 J/K. Above what temperature is it spontaneous?",
+             "delta G < 0 when T > delta H / delta S = 30000 / 100 = 300 K."),
+        ],
+    },
+    6: {
+        "name": "Equilibrium",
+        "keywords": [
+            ("Le Chatelier's principle", "A system at equilibrium shifts to oppose any change in concentration, pressure or temperature."),
+            ("Kc and Kp", "Equilibrium constants in terms of concentrations and partial pressures; Kp = Kc (RT)^(delta n)."),
+            ("Reaction quotient (Q)", "Same expression as K at any moment. Q < K: reaction goes forward."),
+            ("Common ion effect", "Suppression of ionisation of a weak electrolyte by adding a common ion."),
+            ("Buffer solution", "Resists change in pH on adding small amounts of acid or base."),
+            ("pH", "Negative log of hydrogen ion concentration."),
+            ("Solubility product (Ksp)", "Product of ion concentrations in a saturated solution of a sparingly soluble salt."),
+            ("Conjugate acid-base pair", "Two species differing by one proton."),
+            ("Lewis acid", "Electron pair acceptor."),
+        ],
+        "quiz": [
+            ("What is the pH of 10^-8 M HCl at 25 C?",
+             ["8", "Slightly below 7", "Exactly 7", "6"], 1,
+             "Don't forget that water itself supplies H+ ions.",
+             "Total [H+] is 10^-8 + 10^-7 = 1.1 x 10^-7 M, so pH is about 6.96."),
+            ("For which reaction is Kp equal to Kc?",
+             ["N2 + 3H2 <-> 2NH3", "H2 + I2 <-> 2HI", "PCl5 <-> PCl3 + Cl2", "2SO2 + O2 <-> 2SO3"], 1,
+             "Kp = Kc (RT)^(delta n). When is the exponent zero?",
+             "For H2 + I2 <-> 2HI, delta n = 2 - 2 = 0."),
+            ("An inert gas is added to the equilibrium N2 + 3H2 <-> 2NH3 at constant volume. The equilibrium:",
+             ["Shifts forward", "Shifts backward", "Does not change", "Stops"], 2,
+             "Do the partial pressures of reacting gases change?",
+             "At constant volume the concentrations of the reacting gases remain the same, so no shift."),
+            ("What is the conjugate base of H2PO4-?",
+             ["H3PO4", "HPO4(2-)", "PO4(3-)", "OH-"], 1,
+             "A conjugate base is formed by LOSING a proton.",
+             "H2PO4- loses H+ to give HPO4(2-)."),
+        ],
+        "practice": [
+            (1, "State Le Chatelier's principle.",
+             "If a stress (change in concentration, pressure or temperature) is applied to a system at equilibrium, the system shifts in the direction that reduces the stress."),
+            (2, "Why does the solubility of AgCl decrease on adding NaCl?",
+             "Common ion effect: extra Cl- shifts AgCl(s) <-> Ag+ + Cl- to the left, so less AgCl dissolves."),
+            (3, "Write the Kc expression for N2 + 3H2 <-> 2NH3 and connect Kp with Kc.",
+             "Kc = [NH3]^2 / ([N2][H2]^3). Kp = Kc (RT)^(delta n) with delta n = -2, so Kp = Kc (RT)^-2."),
+            (3, "Calculate the pH of 0.01 M HCl and of 0.001 M NaOH.",
+             "HCl: pH = 2. NaOH: pOH = 3, so pH = 14 - 3 = 11."),
+        ],
+    },
+    7: {
+        "name": "Redox Reactions",
+        "keywords": [
+            ("Oxidation and reduction", "Oxidation: loss of electrons (oxidation number increases). Reduction: gain of electrons."),
+            ("Oxidation number", "Hypothetical charge on an atom if all bonds were ionic."),
+            ("Oxidising agent", "Substance that gains electrons (gets reduced)."),
+            ("Reducing agent", "Substance that loses electrons (gets oxidised)."),
+            ("Disproportionation", "Same element is simultaneously oxidised and reduced."),
+            ("Half-reaction", "Separate oxidation or reduction part of a redox equation."),
+            ("Electrochemical series", "Metals/ions arranged by standard electrode potential."),
+            ("Stock notation", "Oxidation state written in Roman numerals, e.g. Fe(III) oxide."),
+        ],
+        "quiz": [
+            ("What is the average oxidation number of sulphur in Na2S4O6?",
+             ["+2", "+2.5", "+3", "+6"], 1,
+             "2(+1) + 4x + 6(-2) = 0.", "4x = 10, so x = +2.5 (an average value)."),
+            ("What is the oxidation state of oxygen in OF2?",
+             ["-2", "-1", "0", "+2"], 3,
+             "Compare the electronegativity of F and O.",
+             "Fluorine is more electronegative, so oxygen is +2."),
+            ("Which is a disproportionation reaction?",
+             ["Zn + CuSO4 -> ZnSO4 + Cu", "2H2O2 -> 2H2O + O2", "H2 + Cl2 -> 2HCl", "CaCO3 -> CaO + CO2"], 1,
+             "Look for one species whose same element goes both up and down.",
+             "In H2O2, oxygen goes from -1 to -2 (in H2O) and to 0 (in O2)."),
+            ("Which of these can act ONLY as a reducing agent?",
+             ["SO2", "H2S", "H2SO4", "HNO2"], 1,
+             "Check whether the central element can still be oxidised but cannot be reduced.",
+             "S in H2S is at its lowest state (-2), so it can only increase."),
+        ],
+        "practice": [
+            (1, "Define oxidation in terms of electron transfer.",
+             "Oxidation is loss of electrons by an atom, ion or molecule."),
+            (2, "Find the oxidation number of Mn in KMnO4 and Cr in Cr2O7(2-).",
+             "Mn = +7. Cr = +6."),
+            (2, "Why can copper not displace zinc from zinc sulphate solution?",
+             "Zinc is above copper in the electrochemical series (more reactive, more negative E), so Cu cannot reduce Zn2+."),
+            (3, "Balance in acidic medium: MnO4- + Fe2+ -> Mn2+ + Fe3+.",
+             "MnO4- + 8H+ + 5Fe2+ -> Mn2+ + 4H2O + 5Fe3+."),
+        ],
+    },
+    8: {
+        "name": "Organic Chemistry - Some Basic Principles and Techniques",
+        "keywords": [
+            ("Functional group", "Atom or group that decides the characteristic reactions of a compound."),
+            ("Homologous series", "Family of compounds with the same functional group differing by CH2."),
+            ("Inductive effect", "Permanent polarisation of a sigma bond due to electronegativity difference, transmitted along the chain."),
+            ("Resonance (mesomeric) effect", "Delocalisation of pi electrons or lone pairs through conjugation."),
+            ("Hyperconjugation", "Delocalisation of sigma electrons of C-H into an adjacent empty p or pi orbital."),
+            ("Electrophile and nucleophile", "Electrophile loves electrons (electron-poor); nucleophile donates an electron pair."),
+            ("Carbocation", "Carbon with a positive charge and sextet; order 3 > 2 > 1 > methyl."),
+            ("Isomerism", "Same molecular formula, different structures (chain, position, functional, metamerism)."),
+            ("Lassaigne's test", "Sodium fusion extract used to detect N, S and halogens."),
+            ("Chromatography", "Separation based on differential movement over a stationary phase."),
+        ],
+        "quiz": [
+            ("Which carbocation is the most stable?",
+             ["CH3+", "CH3CH2+", "(CH3)2CH+", "(CH3)3C+"], 3,
+             "Count the alkyl groups available for hyperconjugation and the +I effect.",
+             "The tertiary carbocation has nine C-H bonds for hyperconjugation and three +I groups."),
+            ("What is the IUPAC name of CH3-CH(CH3)-CH2-CH3?",
+             ["Isopentane", "2-Methylbutane", "3-Methylbutane", "Pentane"], 1,
+             "Find the longest chain, then number to give the substituent the lowest locant.",
+             "Longest chain has 4 carbons with a methyl at C-2."),
+            ("In Lassaigne's test, nitrogen is confirmed by the formation of a:",
+             ["Red colour", "Prussian blue colour", "Yellow precipitate", "Black precipitate"], 1,
+             "Iron(II) and iron(III) take part here.",
+             "Sodium cyanide, then ferrocyanide, then ferric ferrocyanide, which is Prussian blue."),
+            ("How many sigma and pi bonds are present in propyne, CH3-C triple-bond CH?",
+             ["6 sigma, 2 pi", "7 sigma, 1 pi", "5 sigma, 3 pi", "6 sigma, 1 pi"], 0,
+             "Count C-H bonds first, then the C-C bonds, remembering a triple bond is 1 sigma + 2 pi.",
+             "4 C-H + 1 C-C + 1 sigma of triple bond = 6 sigma; triple bond has 2 pi."),
+        ],
+        "practice": [
+            (1, "What is a homologous series?",
+             "A series of organic compounds with the same functional group and similar chemical properties, successive members differing by a CH2 unit."),
+            (2, "Write the IUPAC name of CH3CH2CH(OH)CH3.",
+             "Butan-2-ol."),
+            (2, "Explain the principle of paper chromatography.",
+             "It is partition chromatography: components distribute between water held on the paper (stationary phase) and the mobile solvent; components with different solubilities travel different distances (Rf values)."),
+            (3, "Explain the inductive effect with examples of +I and -I groups.",
+             "It is the permanent polarisation of a sigma bond transmitted through the chain. +I groups: alkyl groups (CH3-). -I groups: -NO2, -CN, -F, -Cl. The effect weakens rapidly with distance."),
+        ],
+    },
+    9: {
+        "name": "Hydrocarbons",
+        "keywords": [
+            ("Alkane, alkene, alkyne", "Saturated; C=C double bond; C triple bond C. General formulas CnH2n+2, CnH2n, CnH2n-2."),
+            ("Markovnikov's rule", "In addition of HX to an unsymmetrical alkene, the negative part goes to the carbon with fewer hydrogens."),
+            ("Peroxide (Kharasch) effect", "In presence of peroxide, HBr adds to alkenes in anti-Markovnikov fashion."),
+            ("Wurtz reaction", "Alkyl halide + Na in dry ether gives a higher alkane."),
+            ("Aromaticity", "Cyclic, planar, fully conjugated, with (4n + 2) pi electrons (Huckel rule)."),
+            ("Electrophilic substitution", "Characteristic reaction of benzene: nitration, halogenation, sulphonation, Friedel-Crafts."),
+            ("Ozonolysis", "Cleavage of C=C by ozone then Zn/H2O to give carbonyl compounds."),
+            ("Conformations", "Different arrangements of atoms by rotation about a C-C single bond (staggered is more stable than eclipsed)."),
+        ],
+        "quiz": [
+            ("Which of these follows Huckel's rule and is aromatic?",
+             ["Cyclobutadiene", "Cyclooctatetraene", "Benzene", "Cyclopentane"], 2,
+             "Need a cyclic, planar, conjugated ring with 4n + 2 pi electrons.",
+             "Benzene has 6 pi electrons (n = 1)."),
+            ("HBr is added to propene in the presence of peroxide. The major product is:",
+             ["2-Bromopropane", "1-Bromopropane", "Propane", "Allyl bromide"], 1,
+             "Peroxide reverses the usual orientation.",
+             "Free radical mechanism gives the anti-Markovnikov product, 1-bromopropane."),
+            ("Which hydrocarbon is the most acidic?",
+             ["Ethane", "Ethene", "Ethyne", "Methane"], 2,
+             "Think of the s-character of the carbon bonded to hydrogen.",
+             "sp carbon (50% s) is the most electronegative, so the terminal H of ethyne is the most acidic."),
+            ("Ozonolysis of but-2-ene followed by reductive work-up gives:",
+             ["Methanal only", "Two molecules of ethanal", "Propanal and methanal", "Butanal"], 1,
+             "Break the double bond and put an oxygen on each carbon.",
+             "CH3-CH=CH-CH3 is symmetrical and gives 2 CH3CHO."),
+        ],
+        "practice": [
+            (1, "State Markovnikov's rule.",
+             "When an unsymmetrical reagent HX adds across an unsymmetrical alkene, the negative part (X) attaches to the carbon bearing fewer hydrogen atoms."),
+            (2, "Give the Wurtz reaction for preparing ethane.",
+             "2 CH3Br + 2 Na (dry ether) -> CH3-CH3 + 2 NaBr."),
+            (3, "Why is benzene aromatic?",
+             "It is cyclic, planar and fully conjugated with 6 delocalised pi electrons, satisfying Huckel's (4n + 2) rule for n = 1, which gives extra resonance stability."),
+            (3, "Write the products of ozonolysis of propene.",
+             "Methanal (HCHO) and ethanal (CH3CHO)."),
+        ],
+    },
 }
 
-# Ensure every question stem is clear and tied to its tested topic.
-for _chapter_data in CHAPTERS.values():
-    for _q in _chapter_data["quiz"]:
-        if _q[0] == "Choose the correct answer based on the relevant NCERT concept.":
-            _q[0] = f"Which statement correctly describes {_q[5]}?"
-        # Replace any genericized Bengali answer choices with clear neutral distractors.
-        _fallback = "Review the corresponding NCERT concept and its key application."
-        _q[1] = [f"Option {chr(65+i)}" if option == _fallback else option
-                 for i, option in enumerate(_q[1])]
 
-# -------------------- SESSION STATE --------------------
-if "page" not in st.session_state: st.session_state.page = "Home"
-if "chapter" not in st.session_state: st.session_state.chapter = list(CHAPTERS)[0]
-if "q_index" not in st.session_state: st.session_state.q_index = 0
-if "score" not in st.session_state: st.session_state.score = 0
-if "answered" not in st.session_state: st.session_state.answered = False
-if "selected" not in st.session_state: st.session_state.selected = None
-if "attempted" not in st.session_state: st.session_state.attempted = set()
-if "wrong_topics" not in st.session_state: st.session_state.wrong_topics = []
-if "quiz_order" not in st.session_state: st.session_state.quiz_order = []
+st.set_page_config(page_title="CBSE XI Chemistry Game", page_icon="🧪")
 
-def start_quiz(chapter, shuffle=False):
-    st.session_state.chapter = chapter
-    st.session_state.q_index = 0
-    st.session_state.score = 0
-    st.session_state.answered = False
-    st.session_state.selected = None
-    st.session_state.attempted = set()
-    st.session_state.wrong_topics = []
-    order = list(range(len(CHAPTERS[chapter]["quiz"])))
-    if shuffle: random.shuffle(order)
-    st.session_state.quiz_order = order
-    st.session_state.page = "Quiz"
+LABELS = "abcd"
 
-def reset_question():
-    st.session_state.answered = False
-    st.session_state.selected = None
 
-# -------------------- SIDEBAR --------------------
-with st.sidebar:
-    st.title("🧪 Chemistry XI")
-    st.caption("NCERT-based learning companion")
-    page = st.radio("Navigate", ["Home", "Part 1 · Keywords", "Part 2 · Quiz", "NCERT & Online Resources"])
-    st.session_state.page = page
-    st.divider()
-    st.caption("Academic session: 2026–27")
-    st.caption("9 CBSE theory units")
+def new_quiz(ch_id):
+    qs = list(range(len(CHAPTERS[ch_id]["quiz"])))
+    random.shuffle(qs)
+    orders = {}
+    for qi in qs:
+        order = list(range(len(CHAPTERS[ch_id]["quiz"][qi][1])))
+        random.shuffle(order)
+        orders[qi] = order
+    run = st.session_state.get("quiz", {}).get("run", 0) + 1
+    st.session_state.quiz = {
+        "ch": ch_id, "qs": qs, "orders": orders, "pos": 0, "score": 0,
+        "submitted": False, "hint": False, "was_correct": False, "run": run,
+    }
 
-# -------------------- HOME --------------------
-if st.session_state.page == "Home":
-    st.title("Chemistry XI — Learn Smart, Test Yourself")
-    st.write("Review the corresponding NCERT concept and its key application.")
-    a,b,c = st.columns(3)
-    a.metric("Units", len(CHAPTERS))
-    a.metric("Practice questions", sum(len(v["quiz"]) for v in CHAPTERS.values()))
-    c.metric("Learning sections", 2)
-    st.info("Review the corresponding NCERT concept and its key application.")
-    st.subheader("Choose a chapter")
-    for name, data in CHAPTERS.items():
-        with st.expander(f'{data["unit"]} · {name}  |  {data["weight"]}'):
-            st.write(data["memory"])
-            x,y = st.columns(2)
-            if x.button("📘 Study keywords", key="study_"+name, use_container_width=True):
-                st.session_state.chapter = name
-                st.session_state.page = "Part 1 · Keywords"
-                st.rerun()
-            if y.button("🧠 Start quiz", key="quiz_"+name, use_container_width=True):
-                start_quiz(name)
-                st.rerun()
 
-# -------------------- PART 1 --------------------
-elif st.session_state.page == "Part 1 · Keywords":
-    st.title("📘 Part 1 — Key Words & Concepts")
-    chapter = st.selectbox("Choose the correct answer based on the relevant NCERT concept.", list(CHAPTERS), index=list(CHAPTERS).index(st.session_state.chapter))
-    st.session_state.chapter = chapter
-    data = CHAPTERS[chapter]
-    st.subheader(chapter)
-    st.caption(f'{data["unit"]} · {data["weight"]} (CBSE 2026–27 syllabus)')
-    st.success("Review the corresponding NCERT concept and its key application." + data["memory"])
-    st.write("Review the corresponding NCERT concept and its key application.")
-    for i,(word,desc,memory) in enumerate(data["keywords"],1):
-        with st.expander(f"{i}. {word}"):
-            st.write(desc)
-            st.markdown(f"Recall the relevant definition, formula, or NCERT principle.")
-    st.divider()
-    if st.button("Review the corresponding NCERT concept and its key application.", type="primary"):
-        start_quiz(chapter)
-        st.rerun()
+def keywords_view(ch_id):
+    ch = CHAPTERS[ch_id]
+    st.header("Key words")
+    for term, meaning in ch["keywords"]:
+        st.markdown(f"**{term}**  \n{meaning}")
 
-# -------------------- PART 2 --------------------
-elif st.session_state.page in ["Part 2 · Quiz", "Quiz"]:
-    st.title("🧠 Part 2 — Interactive Quiz")
-    chapter = st.selectbox("Review the corresponding NCERT concept and its key application.", list(CHAPTERS), index=list(CHAPTERS).index(st.session_state.chapter), key="quiz_chapter_select")
-    if chapter != st.session_state.chapter or not st.session_state.quiz_order:
-        start_quiz(chapter)
-        st.rerun()
-    data = CHAPTERS[chapter]
-    questions = data["quiz"]
-    total = len(questions)
-    idx = st.session_state.q_index
-    if idx >= total:
-        st.balloons()
-        st.success("Quiz completed!")
-        st.metric("Your score", f'{st.session_state.score} / {total}')
-        pct = round(st.session_state.score/total*100)
-        st.metric("Accuracy", f"{pct}%")
-        if st.session_state.wrong_topics:
-            st.subheader("Review the corresponding NCERT concept and its key application.")
-            st.write(", ".join(sorted(set(st.session_state.wrong_topics))))
-        st.info("Review the corresponding NCERT concept and its key application.")
-        if st.button("Review the corresponding NCERT concept and its key application.", type="primary"):
-            start_quiz(chapter, shuffle=True)
-            st.rerun()
-    else:
-        qnum = st.session_state.quiz_order[idx]
-        q = questions[qnum]
-        progress = idx/total
-        st.progress(progress, text=f"Question {idx+1} of {total}")
-        st.caption(f'{data["unit"]} · Topic: {q[5]}')
-        st.subheader(q[0])
-        with st.expander("Review the corresponding NCERT concept and its key application."):
-            st.info(q[3])
-        if not st.session_state.answered:
-            selected = st.radio("Review the corresponding NCERT concept and its key application.", q[1], index=None, key=f"answer_{idx}_{chapter}")
-            if st.button("Review the corresponding NCERT concept and its key application.", type="primary", disabled=selected is None):
-                st.session_state.selected = q[1].index(selected)
-                st.session_state.answered = True
-                if st.session_state.selected == q[2]:
-                    st.session_state.score += 1
-                else:
-                    st.session_state.wrong_topics.append(q[5])
-                st.rerun()
+
+def quiz_view(ch_id):
+    ch = CHAPTERS[ch_id]
+    st.header("Quiz")
+    if st.session_state.get("quiz", {}).get("ch") != ch_id:
+        new_quiz(ch_id)
+    qz = st.session_state.quiz
+    total = len(qz["qs"])
+
+    if qz["pos"] >= total:
+        st.subheader(f"Quiz finished! Score: {qz['score']}/{total}")
+        if qz["score"] == total:
+            st.success("Perfect score! Excellent work.")
+            st.balloons()
+        elif qz["score"] >= total / 2:
+            st.info("Good effort. Revise the key words and try again.")
         else:
-            if st.session_state.selected == q[2]:
-                st.success("Review the corresponding NCERT concept and its key application.")
+            st.warning("Review the key words of this chapter and try again.")
+        if st.button("Play again"):
+            new_quiz(ch_id)
+            st.rerun()
+        return
+
+    qi = qz["qs"][qz["pos"]]
+    q, options, correct, hint, why = ch["quiz"][qi]
+    order = qz["orders"][qi]
+    correct_text = options[correct]
+    labels = [options[i] for i in order]
+
+    st.progress(qz["pos"] / total)
+    st.subheader(f"Question {qz['pos'] + 1} of {total}")
+    st.write(q)
+    choice = st.radio(
+        "Choose one:", labels, index=None,
+        key=f"choice_{ch_id}_{qz['run']}_{qz['pos']}",
+        disabled=qz["submitted"],
+    )
+
+    if not qz["submitted"]:
+        col1, col2 = st.columns(2)
+        if col1.button("💡 Show hint"):
+            qz["hint"] = True
+        submit = col2.button("Submit answer", type="primary")
+        if qz["hint"]:
+            st.info(f"Hint: {hint}")
+        if submit:
+            if choice is None:
+                st.warning("Please pick an option first.")
             else:
-                st.error("Review the corresponding NCERT concept and its key application.")
-                st.write("Review the corresponding NCERT concept and its key application.", q[1][st.session_state.selected])
-                st.write("Review the corresponding NCERT concept and its key application.", q[1][q[2]])
-            with st.expander("Recall the relevant definition, formula, or NCERT principle."):
-                st.write(q[4])
-            col1,col2 = st.columns(2)
-            if col1.button("Review the corresponding NCERT concept and its key application.", use_container_width=True):
-                reset_question()
+                qz["submitted"] = True
+                qz["was_correct"] = (choice == correct_text)
+                if qz["was_correct"]:
+                    qz["score"] += 1
                 st.rerun()
-            if col2.button("Review the corresponding NCERT concept and its key application.", type="primary", use_container_width=True):
-                st.session_state.q_index += 1
-                reset_question()
-                st.rerun()
-        st.caption(f'Score so far: {st.session_state.score} · Answered: {idx + (1 if st.session_state.answered else 0)}')
+    else:
+        if qz["hint"]:
+            st.info(f"Hint: {hint}")
+        if qz["was_correct"]:
+            st.success("Correct! Congratulations, well done!")
+        else:
+            st.error(f"Not quite. The right answer is: {correct_text}")
+        st.write(f"**Explanation:** {why}")
+        last = qz["pos"] + 1 >= total
+        if st.button("See my score" if last else "Next question ➡️", type="primary"):
+            qz["pos"] += 1
+            qz["submitted"] = False
+            qz["hint"] = False
+            st.rerun()
 
-# -------------------- RESOURCES --------------------
-elif st.session_state.page == "NCERT & Online Resources":
-    st.title("🌐 NCERT & Online Resources")
-    st.write("Review the corresponding NCERT concept and its key application.")
-    st.markdown("- [NCERT Textbooks — Chemistry Part I](https://ncert.nic.in/textbook.php?kech1=2-8)")
-    st.markdown("- [NCERT Textbooks — Chemistry Part II](https://ncert.nic.in/textbook.php?kech2=5-11)")
-    st.markdown("- [CBSE Academic — Curriculum 2026–27](https://cbseacademic.nic.in/curriculum_2027.html)")
-    st.markdown("- [CBSE Class XI Chemistry 2026–27 syllabus PDF](https://cbseacademic.nic.in/web_material/CurriculumMain27/SecPart2/Chemistry_SecP2_2026-27.pdf)")
-    st.warning("This concept explains the key NCERT principle, its definition, and its application.")
-    st.subheader("Online extension")
-    st.write("Review the corresponding NCERT concept and its key application.")
-    st.caption("Review the corresponding NCERT concept and its key application.")
 
-st.divider()
-st.caption("Chemistry XI Learning App · NCERT-aligned practice material · For educational use")
+def practice_view(ch_id):
+    ch = CHAPTERS[ch_id]
+    st.header("Practice questions")
+    pick = st.radio("Marks", ["All", 1, 2, 3], horizontal=True)
+    items = [p for p in ch["practice"] if pick == "All" or p[0] == pick]
+    if not items:
+        st.write("No questions with those marks in this chapter.")
+    for n, (marks, q, ans) in enumerate(items, 1):
+        st.markdown(f"**Q{n}. [{marks} mark{'s' if marks > 1 else ''}]** {q}")
+        with st.expander("Try it yourself, then click to see the answer"):
+            st.write(ans)
+
+
+st.title("🧪 CBSE Class XI Chemistry (NCERT)")
+part = st.sidebar.radio("Choose a part", ["1. Key words", "2. Quiz", "3. Practice questions"])
+ch_id = st.sidebar.selectbox(
+    "Chapter", list(CHAPTERS), format_func=lambda n: f"{n}. {CHAPTERS[n]['name']}"
+)
+st.caption(f"Chapter {ch_id}: {CHAPTERS[ch_id]['name']}")
+
+if part.startswith("1"):
+    keywords_view(ch_id)
+elif part.startswith("2"):
+    quiz_view(ch_id)
+else:
+    practice_view(ch_id)
